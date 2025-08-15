@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import { ToolAdapterService } from 'src/engine/core-modules/ai/services/tool-adapter.service';
 import { ToolService } from 'src/engine/core-modules/ai/services/tool.service';
-import { WorkflowToolWorkspaceService as WorkflowToolService } from 'src/engine/core-modules/ai/services/workflow-tool.workspace-service';
+import { WorkflowToolRegistryService } from 'src/engine/core-modules/tool/services/workflow-tool-registry.workspace-service';
 import { AgentHandoffExecutorService } from 'src/engine/metadata-modules/agent/agent-handoff-executor.service';
 import { AgentHandoffService } from 'src/engine/metadata-modules/agent/agent-handoff.service';
 import { AgentService } from 'src/engine/metadata-modules/agent/agent.service';
@@ -26,7 +26,7 @@ export class AgentToolService {
     private readonly roleRepository: Repository<RoleEntity>,
     private readonly toolService: ToolService,
     private readonly toolAdapterService: ToolAdapterService,
-    private readonly workflowToolService: WorkflowToolService,
+    private readonly workflowToolRegistry: WorkflowToolRegistryService,
   ) {}
 
   async generateToolsForAgent(
@@ -54,7 +54,7 @@ export class AgentToolService {
       return {};
     }
 
-    const workflowTools = this.getWorkflowTools({
+    const workflowTools = this.getWorkflowToolsFromRegistry({
       agentStandardId: agent.standardId,
       workspaceId,
     });
@@ -138,7 +138,7 @@ export class AgentToolService {
     return handoffTools;
   }
 
-  private getWorkflowTools({
+  private getWorkflowToolsFromRegistry({
     agentStandardId,
     workspaceId,
   }: {
@@ -146,9 +146,39 @@ export class AgentToolService {
     workspaceId: string;
   }): ToolSet {
     if (agentStandardId === WORKFLOW_CREATION_AGENT.standardId) {
-      return this.workflowToolService.generateWorkflowTools(workspaceId);
+      return this.generateWorkflowToolsFromRegistry(workspaceId);
     }
 
     return {};
+  }
+
+  private generateWorkflowToolsFromRegistry(workspaceId: string): ToolSet {
+    const tools: ToolSet = {};
+
+    const registeredToolNames =
+      this.workflowToolRegistry.getRegisteredToolNames();
+
+    registeredToolNames.forEach((toolName) => {
+      const toolDefinition =
+        this.workflowToolRegistry.getToolDefinition(toolName);
+
+      if (toolDefinition) {
+        tools[toolName] = {
+          description: toolDefinition.description,
+          parameters: toolDefinition.parameters,
+          execute: async (params, options) => {
+            const paramsWithWorkspace = { ...params, workspaceId };
+
+            return this.workflowToolRegistry.executeTool(
+              toolName,
+              paramsWithWorkspace,
+              options,
+            );
+          },
+        };
+      }
+    });
+
+    return tools;
   }
 }

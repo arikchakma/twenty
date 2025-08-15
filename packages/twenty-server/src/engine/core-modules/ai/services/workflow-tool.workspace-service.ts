@@ -24,7 +24,7 @@ import {
   deleteWorkflowVersionStepSchema,
   updateWorkflowVersionPositionsSchema,
   updateWorkflowVersionStepSchema,
-} from './workflow-tool-schemas';
+} from 'src/modules/workflow/workflow-builder/schemas/workflow-tool-schemas';
 
 @Injectable()
 export class WorkflowToolWorkspaceService {
