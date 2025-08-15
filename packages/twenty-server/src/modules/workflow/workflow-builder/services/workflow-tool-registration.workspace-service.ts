@@ -39,8 +39,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
   }
 
   private registerWorkflowTools(): void {
-    this.workflowToolRegistry.registerTool({
-      name: 'create_workflow_version_step',
+    this.workflowToolRegistry.registerTool('create_workflow_version_step', {
       description:
         'Create a new step in a workflow version. This adds a step to the specified workflow version with the given configuration.',
       parameters: createWorkflowVersionStepSchema,
@@ -54,8 +53,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'update_workflow_version_step',
+    this.workflowToolRegistry.registerTool('update_workflow_version_step', {
       description:
         'Update an existing step in a workflow version. This modifies the step configuration.',
       parameters: updateWorkflowVersionStepSchema,
@@ -72,8 +70,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'delete_workflow_version_step',
+    this.workflowToolRegistry.registerTool('delete_workflow_version_step', {
       description:
         'Delete a step from a workflow version. This removes the step and updates the workflow structure.',
       parameters: deleteWorkflowVersionStepSchema,
@@ -90,8 +87,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'create_workflow_version_edge',
+    this.workflowToolRegistry.registerTool('create_workflow_version_edge', {
       description:
         'Create a new edge in a workflow version. This connects two steps in the workflow.',
       parameters: createWorkflowVersionEdgeSchema,
@@ -110,8 +106,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'delete_workflow_version_edge',
+    this.workflowToolRegistry.registerTool('delete_workflow_version_edge', {
       description:
         'Delete an edge from a workflow version. This removes the connection between two steps.',
       parameters: deleteWorkflowVersionEdgeSchema,
@@ -130,28 +125,29 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'update_workflow_version_positions',
-      description:
-        'Update the positions of steps and edges in a workflow version.',
-      parameters: updateWorkflowVersionPositionsSchema,
-      execute: async (
-        parameters: UpdateWorkflowVersionPositionsInput & {
-          workspaceId: string;
-        },
-      ) => {
-        return await this.workflowVersionService.updateWorkflowVersionPositions(
-          {
-            workflowVersionId: parameters.workflowVersionId,
-            positions: parameters.positions,
-            workspaceId: parameters.workspaceId,
+    this.workflowToolRegistry.registerTool(
+      'update_workflow_version_positions',
+      {
+        description:
+          'Update the positions of steps and edges in a workflow version.',
+        parameters: updateWorkflowVersionPositionsSchema,
+        execute: async (
+          parameters: UpdateWorkflowVersionPositionsInput & {
+            workspaceId: string;
           },
-        );
+        ) => {
+          return await this.workflowVersionService.updateWorkflowVersionPositions(
+            {
+              workflowVersionId: parameters.workflowVersionId,
+              positions: parameters.positions,
+              workspaceId: parameters.workspaceId,
+            },
+          );
+        },
       },
-    });
+    );
 
-    this.workflowToolRegistry.registerTool({
-      name: 'activate_workflow_version',
+    this.workflowToolRegistry.registerTool('activate_workflow_version', {
       description:
         'Activate a workflow version. This makes it the active version for the workflow.',
       parameters: activateWorkflowVersionSchema,
@@ -162,8 +158,7 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'deactivate_workflow_version',
+    this.workflowToolRegistry.registerTool('deactivate_workflow_version', {
       description: 'Deactivate a workflow version. This makes it inactive.',
       parameters: deactivateWorkflowVersionSchema,
       execute: async (parameters: { workflowVersionId: string }) => {
@@ -173,27 +168,29 @@ export class WorkflowToolRegistryWorkspaceService implements OnModuleInit {
       },
     });
 
-    this.workflowToolRegistry.registerTool({
-      name: 'create_draft_from_workflow_version',
-      description: 'Create a draft workflow version from an existing version.',
-      parameters: createDraftFromWorkflowVersionSchema,
-      execute: async (parameters: {
-        workflowId: string;
-        workflowVersionIdToCopy: string;
-        workspaceId: string;
-      }) => {
-        return await this.workflowVersionService.createDraftFromWorkflowVersion(
-          {
-            workspaceId: parameters.workspaceId,
-            workflowId: parameters.workflowId,
-            workflowVersionIdToCopy: parameters.workflowVersionIdToCopy,
-          },
-        );
+    this.workflowToolRegistry.registerTool(
+      'create_draft_from_workflow_version',
+      {
+        description:
+          'Create a draft workflow version from an existing version.',
+        parameters: createDraftFromWorkflowVersionSchema,
+        execute: async (parameters: {
+          workflowId: string;
+          workflowVersionIdToCopy: string;
+          workspaceId: string;
+        }) => {
+          return await this.workflowVersionService.createDraftFromWorkflowVersion(
+            {
+              workspaceId: parameters.workspaceId,
+              workflowId: parameters.workflowId,
+              workflowVersionIdToCopy: parameters.workflowVersionIdToCopy,
+            },
+          );
+        },
       },
-    });
+    );
 
-    this.workflowToolRegistry.registerTool({
-      name: 'compute_step_output_schema',
+    this.workflowToolRegistry.registerTool('compute_step_output_schema', {
       description: 'Compute the output schema for a workflow step.',
       parameters: computeStepOutputSchemaSchema,
       execute: async (parameters: {
